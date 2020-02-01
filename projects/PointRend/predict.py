@@ -45,12 +45,9 @@ def main(args):
     #     cfg.MODEL.WEIGHTS, resume=args.resume
     # )
     pred = DefaultPredictor(cfg)
-    # inputs = cv2.imread("input.jpg")
-    # outputs = pred(inputs)
-    test_input = torch.ones((224, 224, 3))
-    test_input = test_input.cuda().float()
-    print(test_input)
-    test_output = pred(test_input)
+    inputs = cv2.imread("test.png")
+    outputs = pred(inputs)
+    # test_input = torch.ones((224, 224, 3))
     # res = Trainer.test(cfg, model)
     # if comm.is_main_process():
     #     verify_results(cfg, res)
