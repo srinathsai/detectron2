@@ -9,6 +9,10 @@ os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"   # see issue #152
 os.environ["CUDA_VISIBLE_DEVICES"] = "7"
 import torch
 import cv2
+import matplotlib
+matplotlib.use('TkAgg')
+import matplotlib.pyplot as plt
+
 import detectron2.utils.comm as comm
 from detectron2.checkpoint import DetectionCheckpointer
 from detectron2.config import get_cfg
@@ -47,6 +51,13 @@ def main(args):
     pred = DefaultPredictor(cfg)
     inputs = cv2.imread("test.png")
     outputs = pred(inputs)
+    print(outputs.keys())
+    print(outputs['instances'])
+    print(outputs['instances'].pred_masks)
+    mask = outputs['instances'].pred_masks[0]
+    mask = mask.cpu().detach().numpy()
+    plt.imshow(mask)
+    plt.show()
     # test_input = torch.ones((224, 224, 3))
     # res = Trainer.test(cfg, model)
     # if comm.is_main_process():
