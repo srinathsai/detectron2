@@ -5,6 +5,8 @@ PointRend Prediction Script.
 """
 
 import os
+os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"   # see issue #152
+os.environ["CUDA_VISIBLE_DEVICES"] = "7"
 import torch
 
 import detectron2.utils.comm as comm
@@ -79,7 +81,9 @@ def main(args):
     DetectionCheckpointer(model, save_dir=cfg.OUTPUT_DIR).resume_or_load(
         cfg.MODEL.WEIGHTS, resume=args.resume
     )
-    print(model)
+    test_input = torch.ones((1, 224, 224, 3))
+    test_input = test_input.cuda().float()
+    print(test_input)
     # res = Trainer.test(cfg, model)
     # if comm.is_main_process():
     #     verify_results(cfg, res)
