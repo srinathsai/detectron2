@@ -83,7 +83,9 @@ def main(args):
     )
     test_input = torch.ones((1, 224, 224, 3))
     test_input = test_input.cuda().float()
+    test_input = {'image': test_input}
     print(test_input)
+    test_output = model(test_input)
     # res = Trainer.test(cfg, model)
     # if comm.is_main_process():
     #     verify_results(cfg, res)
