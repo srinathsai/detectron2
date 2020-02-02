@@ -66,7 +66,6 @@ def main(args):
         human_masks = human_masks.cpu().detach().numpy()
         largest_sum_mask_index = np.argmax(np.sum(human_masks, axis=(1, 2)), axis=0)
         human_mask = human_masks[largest_sum_mask_index, :, :].astype(np.uint8)
-        print(human_mask.shape, input.shape, human_mask.dtype, input.dtype)
         overlay = cv2.addWeighted(input, 1.0,
                                   255 * np.tile(human_mask[:, :, None], [1, 1, 3]),
                                   0.5, gamma=0)
