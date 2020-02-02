@@ -51,8 +51,11 @@ def main(args):
     input_folder = args.input_folder
     output_masks_folder = input_folder.replace('cropped_frames', 'pointrend_R50FPN_masks')
     output_vis_folder = input_folder.replace('cropped_frames', 'pointrend_R50FPN_vis')
-    image_fnames = [f for f in sorted(os.listdir(input_folder)) if f.endswith('.png')]
     print("Saving to:", output_masks_folder)
+    os.makedirs(output_masks_folder, exist_ok=True)
+    os.makedirs(output_vis_folder, exist_ok=True)
+
+    image_fnames = [f for f in sorted(os.listdir(input_folder)) if f.endswith('.png')]
     for fname in image_fnames:
         print(fname)
         input = cv2.imread(os.path.join(input_folder, fname))
@@ -63,7 +66,7 @@ def main(args):
         human_masks = human_masks.cpu().detach().numpy()
         largest_sum_mask_index = np.argmax(np.sum(human_masks, axis=(1, 2)), axis=0)
         human_mask = human_masks[largest_sum_mask_index, :, :]
-        print(human_mask.shape)
+        print(human_mask.shape, input.shape, human_mask.dtype, input.dtype)
         overlay = cv2.addWeighted(input, 1.0,
                                   255.0 * np.tile(human_mask[:, :, None], [1, 1, 3]),
                                   0.5, gamma=0)
