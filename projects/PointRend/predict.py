@@ -54,7 +54,8 @@ def main(args):
     outputs = pred(inputs)
     print(outputs.keys())
     print(outputs['instances'])
-    print(outputs['instances'].pred_masks)
+    print(outputs['instances'].pred_masks.shape)
+    print(outputs['instances'].pred_classes)
     mask = outputs['instances'].pred_masks[0]
     mask = mask.cpu().detach().numpy()
     plt.imshow(mask.astype(np.uint8))
