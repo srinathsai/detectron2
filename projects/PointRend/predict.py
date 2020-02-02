@@ -68,7 +68,7 @@ def main(args):
         human_mask = human_masks[largest_sum_mask_index, :, :].astype(np.uint8)
         print(human_mask.shape, input.shape, human_mask.dtype, input.dtype)
         overlay = cv2.addWeighted(input, 1.0,
-                                  255.0 * np.tile(human_mask[:, :, None], [1, 1, 3]),
+                                  255 * np.tile(human_mask[:, :, None], [1, 1, 3]),
                                   0.5, gamma=0)
         save_vis_path = os.path.join(output_vis_folder, fname)
         save_mask_path = os.path.join(output_masks_folder, fname)
