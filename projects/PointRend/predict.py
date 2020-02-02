@@ -52,7 +52,7 @@ def main(args):
     output_masks_folder = input_folder.replace('cropped_frames', 'pointrend_R50FPN_masks')
     output_vis_folder = input_folder.replace('cropped_frames', 'pointrend_R50FPN_vis')
     image_fnames = [f for f in sorted(os.listdir(input_folder)) if f.endswith('.png')]
-
+    print("Saving to:", output_masks_folder)
     for fname in image_fnames:
         print(fname)
         input = cv2.imread(os.path.join(input_folder, fname))
@@ -63,7 +63,7 @@ def main(args):
         human_masks = human_masks.cpu().detach().numpy()
         largest_sum_mask_index = np.argmax(np.sum(human_masks, axis=(1, 2)), axis=0)
         human_mask = human_masks[largest_sum_mask_index, :, :]
-
+        print(human_mask.shape)
         overlay = cv2.addWeighted(input, 1.0,
                                   255.0 * np.tile(human_mask[:, :, None], [1, 1, 3]),
                                   0.5, gamma=0)
@@ -85,7 +85,7 @@ if __name__ == "__main__":
     #     args=(args,),
     # )
     parser = argparse.ArgumentParser()
-    parser.add_argument('--input_folder', type=str)
+    parser.add_argument('--input-folder', type=str)
     parser.add_argument("--config-file", default="", metavar="FILE", help="path to config file")
     parser.add_argument(
         "opts",
