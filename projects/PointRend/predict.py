@@ -8,6 +8,7 @@ import os
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"   # see issue #152
 os.environ["CUDA_VISIBLE_DEVICES"] = "7"
 import torch
+import argparse
 import numpy as np
 import cv2
 import matplotlib
@@ -45,37 +46,54 @@ def setup(args):
 
 def main(args):
     cfg = setup(args)
-    # model = Trainer.build_model(cfg)
-    # DetectionCheckpointer(model, save_dir=cfg.OUTPUT_DIR).resume_or_load(
-    #     cfg.MODEL.WEIGHTS, resume=args.resume
-    # )
     pred = DefaultPredictor(cfg)
-    inputs = cv2.imread("test.png")
-    outputs = pred(inputs)
-    print(outputs.keys())
-    print(outputs['instances'])
-    print(outputs['instances'].pred_masks.shape)
-    print(outputs['instances'].pred_classes)
-    mask = outputs['instances'].pred_masks[0]
-    mask = mask.cpu().detach().numpy()
-    plt.imshow(mask.astype(np.uint8))
-    plt.show()
-    # test_input = torch.ones((224, 224, 3))
-    # res = Trainer.test(cfg, model)
-    # if comm.is_main_process():
-    #     verify_results(cfg, res)
-    # return res
 
+    input_folder = args.input_folder
+    output_masks_folder = input_folder.replace('cropped_frames', 'pointrend_R50FPN_masks')
+    output_vis_folder = input_folder.replace('cropped_frames', 'pointrend_R50FPN_vis')
+    image_fnames = [f for f in sorted(os.listdir(input_folder)) if f.endswith('.png')]
+
+    for fname in image_fnames:
+        print(fname)
+        input = cv2.imread(os.path.join(input_folder, fname))
+        outputs = pred(input)['instances']
+        classes = outputs.pred_classes
+        masks = outputs.pred_masks
+        human_masks = masks[classes == 0]
+        human_masks = human_masks.cpu().detach().numpy()
+        largest_sum_mask_index = np.argmax(np.sum(human_masks, axis=(1, 2)), axis=0)
+        human_mask = human_masks[largest_sum_mask_index, :, :]
+
+        overlay = cv2.addWeighted(input, 1.0,
+                                  255.0 * np.tile(human_mask[:, :, None], [1, 1, 3]),
+                                  0.5, gamma=0)
+        save_vis_path = os.path.join(output_vis_folder, fname)
+        save_mask_path = os.path.join(output_masks_folder, fname)
+        cv2.imwrite(save_vis_path, overlay)
+        cv2.imwrite(save_mask_path, human_mask)
 
 
 if __name__ == "__main__":
-    args = default_argument_parser().parse_args()
-    print("Command Line Args:", args)
-    launch(
-        main,
-        args.num_gpus,
-        num_machines=args.num_machines,
-        machine_rank=args.machine_rank,
-        dist_url=args.dist_url,
-        args=(args,),
+    # args = default_argument_parser().parse_args()
+    # print("Command Line Args:", args)
+    # launch(
+    #     main,
+    #     args.num_gpus,
+    #     num_machines=args.num_machines,
+    #     machine_rank=args.machine_rank,
+    #     dist_url=args.dist_url,
+    #     args=(args,),
+    # )
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--input_folder', type=str)
+    parser.add_argument("--config-file", default="", metavar="FILE", help="path to config file")
+    parser.add_argument(
+        "opts",
+        help="Modify config options using the command-line",
+        default=None,
+        nargs=argparse.REMAINDER,
     )
+    args = parser.parse_args()
+    print("Command Line Args:", args)
+    main(args)
+
