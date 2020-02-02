@@ -56,7 +56,7 @@ def main(args):
     print(outputs['instances'].pred_masks)
     mask = outputs['instances'].pred_masks[0]
     mask = mask.cpu().detach().numpy()
-    plt.imshow(mask)
+    plt.imshow(mask.astype(np.uint8))
     plt.show()
     # test_input = torch.ones((224, 224, 3))
     # res = Trainer.test(cfg, model)
