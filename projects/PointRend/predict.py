@@ -87,8 +87,8 @@ if __name__ == "__main__":
     #     args=(args,),
     # )
     parser = argparse.ArgumentParser()
-    parser.add_argument('--input-folder', type=str)
-    parser.add_argument("--config-file", default="", metavar="FILE", help="path to config file")
+    parser.add_argument('--input_folder', type=str)
+    parser.add_argument("--config_file", default="", metavar="FILE", help="path to config file")
     parser.add_argument(
         "opts",
         help="Modify config options using the command-line",
