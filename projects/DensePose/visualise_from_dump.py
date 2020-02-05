@@ -1,8 +1,8 @@
 import pickle
 import argparse
 
-# import sys
-# sys.path.append("/data/cvfs/as2562/detectron2/projects/DensePose/")
+import sys
+sys.path.append("/data/cvfs/as2562/detectron2/projects/DensePose/")
 
 def visualise_denspose_results(dump_file):
     with open(dump_file, 'rb') as f_results:
