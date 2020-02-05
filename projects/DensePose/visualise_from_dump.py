@@ -88,7 +88,6 @@ def visualise_denspose_results(dump_file, out_folder):
 
         I_image = np.zeros((orig_h, orig_w))
         I_image[int(h1):int(h2), int(w1):int(w2)] = iuv_arr[0, :, :]
-        I_image = I_image.astype(np.float32)
         # U_image = np.zeros((orig_h, orig_w))
         # U_image[int(h1):int(h2), int(w1):int(w2)] = iuv_arr[1, :, :]
         # V_image = np.zeros((orig_h, orig_w))
@@ -96,7 +95,7 @@ def visualise_denspose_results(dump_file, out_folder):
 
         # Save visualisation and I image (i.e. segmentation mask)
         vis_I_image = apply_colormap(I_image, vmin=0, vmax=24)
-        vis_I_image = vis_I_image[:, :, :3]
+        vis_I_image = vis_I_image[:, :, :3].astype(np.float32)
         overlay = cv2.addWeighted(frame,
                                   1.0,
                                   vis_I_image,
