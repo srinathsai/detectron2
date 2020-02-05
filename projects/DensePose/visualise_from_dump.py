@@ -32,16 +32,18 @@ def visualise_denspose_results(dump_file):
                       * (bboxes_xyxy[:, 3] - bboxes_xyxy[:, 1])
         largest_bbox_index = np.argmax(bboxes_area)
 
-        largest_bbox = bboxes_xyxy[largest_bbox_index].astype(np.int16)
         result_encoded = entry['pred_densepose'].results[largest_bbox_index]
         iuv_arr = DensePoseResult.decode_png_data(*result_encoded)
 
-        # # Round bbox to int
-        # rounded_largest_bbox =
+        # Round bbox to int
+        largest_bbox = bboxes_xyxy[largest_bbox_index]
+        w1 = largest_bbox[0]
+        w2 = largest_bbox[0] + iuv_arr.shape[2]
+        h1 = largest_bbox[1]
+        h2 = largest_bbox[1] + iuv_arr.shape[1]
 
         I_image = np.zeros((orig_h, orig_w))
-        I_image[largest_bbox[0]:largest_bbox[2],
-        largest_bbox[1]:largest_bbox[3]] = iuv_arr[0, :, :]
+        I_image[h1:h2, w1:w2] = iuv_arr[0, :, :]
         print(I_image.shape)
         plt.imshow(I_image/24)
         plt.show()
