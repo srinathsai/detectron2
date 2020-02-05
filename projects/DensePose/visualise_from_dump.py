@@ -1,8 +1,9 @@
-import pickle
-import argparse
-
 import sys
 sys.path.append("/data/cvfs/as2562/detectron2/projects/DensePose/")
+import pickle
+import argparse
+from densepose.structures import DensePoseResult
+
 
 def visualise_denspose_results(dump_file):
     with open(dump_file, 'rb') as f_results:
@@ -12,7 +13,7 @@ def visualise_denspose_results(dump_file):
         fname = entry['file_name']
         result_encoded = entry['pred_densepose'].results[0]
         iuv_arr = DensePoseResult.decode_png_data(*result_encoded)
-        print(iuv_arr)
+        print(iuv_arr.shape)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
