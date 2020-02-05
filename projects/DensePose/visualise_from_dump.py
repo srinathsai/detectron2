@@ -97,14 +97,15 @@ def visualise_denspose_results(dump_file, out_folder):
         # Save visualisation and I image (i.e. segmentation mask)
         vis_I_image = apply_colormap(I_image, vmin=0, vmax=24)
         vis_I_image = vis_I_image[:, :, :3]
+        overlay = cv2.addWeighted(frame,
+                                  1.0,
+                                  vis_I_image,
+                                  0.5,
+                                  gamma=0)
+        plt.imshow(I_image)
+        plt.show()
         plt.imshow(vis_I_image)
         plt.show()
-        # overlay = cv2.addWeighted(frame,
-        #                           1.0,
-        #                           128.0 + 128.0 * np.tile(I_image[:, :, None]/24.0,
-        #                                           [1, 1, 3]),
-        #                           0.5,
-        #                           gamma=0)
         # cv2.imwrite(out_vis_path, overlay)
         # cv2.imwrite(out_mask_path, I_image)
 
