@@ -39,7 +39,7 @@ def visualise_denspose_results(dump_file):
         # # Round bbox to int
         # rounded_largest_bbox =
 
-        I_image = np.zeros(orig_h, orig_w)
+        I_image = np.zeros((orig_h, orig_w))
         I_image[largest_bbox[0]:largest_bbox[2],
         largest_bbox[1]:largest_bbox[3]] = iuv_arr[0, :, :]
         print(I_image.shape)
