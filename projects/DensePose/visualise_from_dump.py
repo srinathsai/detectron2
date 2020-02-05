@@ -81,6 +81,7 @@ def visualise_denspose_results(dump_file, out_folder):
 
         # Round bbox to int
         largest_bbox = bboxes_xyxy[largest_bbox_index]
+        print(largest_bbox)
         w1 = largest_bbox[0]
         w2 = largest_bbox[0] + iuv_arr.shape[2]
         h1 = largest_bbox[1]
@@ -98,9 +99,9 @@ def visualise_denspose_results(dump_file, out_folder):
         vis_I_image = vis_I_image[:, :, :3].astype(np.float32)
         vis_I_image[I_image == 0, :] = np.zeros(3, dtype=np.float32)
         overlay = cv2.addWeighted(frame,
-                                  0.8,
+                                  0.6,
                                   vis_I_image,
-                                  0.2,
+                                  0.4,
                                   gamma=0)
         cv2.imwrite(out_vis_path, overlay)
         cv2.imwrite(out_mask_path, I_image)
