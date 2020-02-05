@@ -36,6 +36,7 @@ def visualise_denspose_results(dump_file, out_folder):
             os.makedirs(os.path.dirname(out_mask_path))
 
         frame = cv2.imread(frame_fname)
+        frame = frame.astype(np.float32)
         orig_h, orig_w = frame.shape[:2]
 
         # Choose the result instance (index) with largest bounding box
@@ -56,6 +57,7 @@ def visualise_denspose_results(dump_file, out_folder):
 
         I_image = np.zeros((orig_h, orig_w))
         I_image[int(h1):int(h2), int(w1):int(w2)] = iuv_arr[0, :, :]
+        I_image = I_image.astype(np.float32)
         # U_image = np.zeros((orig_h, orig_w))
         # U_image[int(h1):int(h2), int(w1):int(w2)] = iuv_arr[1, :, :]
         # V_image = np.zeros((orig_h, orig_w))
