@@ -8,7 +8,7 @@ def visualise_denspose_results(dump_file):
 
     for entry in data:
         fname = entry['file_name']
-        result_encoded = entry['pred_densepose']
+        result_encoded = entry['pred_densepose'].results
         print(result_encoded)
         # iuv_arr = DensePoseResult.decode_png_data(*result_encoded)
 
