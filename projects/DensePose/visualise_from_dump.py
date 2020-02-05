@@ -43,7 +43,7 @@ def visualise_denspose_results(dump_file):
         h2 = largest_bbox[1] + iuv_arr.shape[1]
 
         I_image = np.zeros((orig_h, orig_w))
-        I_image[h1:h2, w1:w2] = iuv_arr[0, :, :]
+        I_image[int(h1):int(h2), int(w1):int(w2)] = iuv_arr[0, :, :]
         print(I_image.shape)
         plt.imshow(I_image/24)
         plt.show()
