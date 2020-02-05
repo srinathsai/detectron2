@@ -70,11 +70,22 @@ def visualise_denspose_results(dump_file, out_folder):
         frame = frame.astype(np.float32)
         orig_h, orig_w = frame.shape[:2]
 
-        # Choose the result instance (index) with largest bounding box
+        # Choose the result instance (index) with largest bounding box that is also roughly
+        # centred
         bboxes_xyxy = entry['pred_boxes_XYXY'].numpy()
         bboxes_area = (bboxes_xyxy[:, 2] - bboxes_xyxy[:, 0]) \
                       * (bboxes_xyxy[:, 3] - bboxes_xyxy[:, 1])
-        largest_bbox_index = np.argmax(bboxes_area)
+        # largest_bbox_index = np.argmax(bboxes_area)
+        sorted_bbox_indices = np.argsort(bboxes_area)
+        bbox_found = False
+        i = 0
+        while not bbox_found:
+            bbox_index = sorted_bbox_indices[i]
+            bbox = bboxes_xyxy[bbox_index]
+            if bbox[0] > 20 and bbox[1] > 20:
+                largest_bbox_index = bbox_index
+                bbox_found = True
+            i += 1
 
         result_encoded = entry['pred_densepose'].results[largest_bbox_index]
         iuv_arr = DensePoseResult.decode_png_data(*result_encoded)
