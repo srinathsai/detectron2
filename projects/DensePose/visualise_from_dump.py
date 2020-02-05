@@ -9,11 +9,16 @@ def visualise_denspose_results(dump_file):
     with open(dump_file, 'rb') as f_results:
         data = pickle.load(f_results)
 
+    # Loop through frames
     for entry in data:
-        fname = entry['file_name']
-        bboxes_xyxy = entry['pred_boxes_XYXY']
+        frame_fname = entry['file_name']
+        print(frame_fname)
+        bboxes_xyxy = entry['pred_boxes_XYXY'].numpy()
         # Choose the result instance (index) with largest bounding box
         print(bboxes_xyxy)
+        bboxes_area = (bboxes_xyxy[:, 2] - bboxes_xyxy[:, 0]) \
+                      * (bboxes_xyxy[:, 3] - bboxes_xyxy[:, 1])
+        print(bboxes_area)
         # results_encoded = entry['pred_densepose']
         # iuv_arr = DensePoseResult.decode_png_data(*result_encoded)
         # print(iuv_arr)
