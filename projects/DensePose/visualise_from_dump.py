@@ -76,7 +76,7 @@ def visualise_denspose_results(dump_file, out_folder):
         bboxes_area = (bboxes_xyxy[:, 2] - bboxes_xyxy[:, 0]) \
                       * (bboxes_xyxy[:, 3] - bboxes_xyxy[:, 1])
         # largest_bbox_index = np.argmax(bboxes_area)
-        sorted_bbox_indices = np.argsort(bboxes_area)
+        sorted_bbox_indices = np.argsort(bboxes_area)[::-1]
         bbox_found = False
         i = 0
         while not bbox_found:
