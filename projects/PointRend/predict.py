@@ -1,7 +1,9 @@
 # Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
 """
 PointRend Prediction Script.
-
+In particular, this script saves a mask corresponding to the largest detected human in each
+image from a folder of input images.
+The output file name is currently set up for the sports_videos_smpl dataset - CHANGE IF NEEDED.
 """
 
 import os
