@@ -1,7 +1,9 @@
 # Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
 """
 PointRend Prediction Script.
-
+In particular, this script saves a mask corresponding to the largest detected human in each
+image from a folder of input images.
+The output file name is currently set up for the sports_videos_smpl dataset - CHANGE IF NEEDED.
 """
 
 import os
@@ -87,8 +89,8 @@ if __name__ == "__main__":
     #     args=(args,),
     # )
     parser = argparse.ArgumentParser()
-    parser.add_argument('--input-folder', type=str)
-    parser.add_argument("--config-file", default="", metavar="FILE", help="path to config file")
+    parser.add_argument('--input_folder', type=str)
+    parser.add_argument("--config_file", default="", metavar="FILE", help="path to config file")
     parser.add_argument(
         "opts",
         help="Modify config options using the command-line",
