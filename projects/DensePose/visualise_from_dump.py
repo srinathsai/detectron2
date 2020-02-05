@@ -83,6 +83,7 @@ def visualise_denspose_results(dump_file, out_folder):
             bbox_index = sorted_bbox_indices[i]
             bbox = bboxes_xyxy[bbox_index]
             bbox_centre = (bbox[2] - bbox[0], bbox[3] - bbox[1])
+            print(bbox_centre, orig_w)
             if abs(bbox_centre[0] - orig_w/2.0) < 100 and abs(bbox_centre[1] - orig_h/2.0) < 100:
                 largest_bbox_index = bbox_index
                 bbox_found = True
