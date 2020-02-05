@@ -4,6 +4,7 @@ Only visualises for the largest person (largest bounding box) in the image.
 """
 
 import sys
+import os
 import pickle
 import argparse
 import numpy as np
@@ -15,7 +16,8 @@ import matplotlib
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 
-def visualise_denspose_results(dump_file):
+
+def visualise_denspose_results(dump_file, out_folder):
     with open(dump_file, 'rb') as f_results:
         data = pickle.load(f_results)
 
@@ -23,6 +25,16 @@ def visualise_denspose_results(dump_file):
     for entry in data:
         frame_fname = entry['file_name']
         print(frame_fname)
+        if out_folder == 'dataset':
+            out_vis_path = frame_fname.replace('cropped_frames', 'densepose_vis')
+            out_mask_path = frame_fname.replace('cropped_frames', 'densepose_masks')
+        else:
+            raise NotImplementedError
+
+        if not os.path.exists(os.path.dirname(out_vis_path)):
+            os.makedirs(os.path.dirname(out_vis_path))
+            os.makedirs(os.path.dirname(out_mask_path))
+
         frame = cv2.imread(frame_fname)
         orig_h, orig_w = frame.shape[:2]
 
@@ -44,16 +56,26 @@ def visualise_denspose_results(dump_file):
 
         I_image = np.zeros((orig_h, orig_w))
         I_image[int(h1):int(h2), int(w1):int(w2)] = iuv_arr[0, :, :]
-        U_image = np.zeros((orig_h, orig_w))
-        U_image[int(h1):int(h2), int(w1):int(w2)] = iuv_arr[1, :, :]
-        V_image = np.zeros((orig_h, orig_w))
-        V_image[int(h1):int(h2), int(w1):int(w2)] = iuv_arr[2, :, :]
-        plt.imshow(U_image)
-        plt.show()
+        # U_image = np.zeros((orig_h, orig_w))
+        # U_image[int(h1):int(h2), int(w1):int(w2)] = iuv_arr[1, :, :]
+        # V_image = np.zeros((orig_h, orig_w))
+        # V_image[int(h1):int(h2), int(w1):int(w2)] = iuv_arr[2, :, :]
+
+        # Save visualisation and I image (i.e. segmentation mask)
+        overlay = cv2.addWeighted(frame,
+                                  1.0,
+                                  255.0 * np.tile(I_image[:, :, None]/24.0,
+                                                  [1, 1, 3]),
+                                  0.5,
+                                  gamma=0)
+        cv2.imwrite(out_vis_path, overlay)
+        cv2.imwrite(out_mask_path, I_image)
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--dump_file', type=str)
+    parser.add_argument('--out_folder', type=str)
     args = parser.parse_args()
 
-    visualise_denspose_results(args.dump_file)
+    visualise_denspose_results(args.dump_file, args.out_folder)
