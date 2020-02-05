@@ -18,6 +18,36 @@ matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 
 
+def apply_colormap(image, vmin=None, vmax=None, cmap='viridis', cmap_seed=1):
+    """
+    Apply a matplotlib colormap to an image.
+
+    This method will preserve the exact image size. `cmap` can be either a
+    matplotlib colormap name, a discrete number, or a colormap instance. If it
+    is a number, a discrete colormap will be generated based on the HSV
+    colorspace. The permutation of colors is random and can be controlled with
+    the `cmap_seed`. The state of the RNG is preserved.
+    """
+    image = image.astype("float64")  # Returns a copy.
+    # Normalization.
+    if vmin is not None:
+        imin = float(vmin)
+        image = np.clip(image, vmin, sys.float_info.max)
+    else:
+        imin = np.min(image)
+    if vmax is not None:
+        imax = float(vmax)
+        image = np.clip(image, -sys.float_info.max, vmax)
+    else:
+        imax = np.max(image)
+    image -= imin
+    image /= (imax - imin)
+    # Visualization.
+    cmap_ = plt.get_cmap(cmap)
+    vis = cmap_(image, bytes=True)
+    return vis
+
+
 def visualise_denspose_results(dump_file, out_folder):
     with open(dump_file, 'rb') as f_results:
         data = pickle.load(f_results)
@@ -65,14 +95,17 @@ def visualise_denspose_results(dump_file, out_folder):
         # V_image[int(h1):int(h2), int(w1):int(w2)] = iuv_arr[2, :, :]
 
         # Save visualisation and I image (i.e. segmentation mask)
-        overlay = cv2.addWeighted(frame,
-                                  1.0,
-                                  128.0 + 128.0 * np.tile(I_image[:, :, None]/24.0,
-                                                  [1, 1, 3]),
-                                  0.5,
-                                  gamma=0)
-        cv2.imwrite(out_vis_path, overlay)
-        cv2.imwrite(out_mask_path, I_image)
+        vis_I_image = apply_colormap(I_image, vmin=0, vmax=24)
+        plt.imshow(vis_I_image)
+        plt.show()
+        # overlay = cv2.addWeighted(frame,
+        #                           1.0,
+        #                           128.0 + 128.0 * np.tile(I_image[:, :, None]/24.0,
+        #                                           [1, 1, 3]),
+        #                           0.5,
+        #                           gamma=0)
+        # cv2.imwrite(out_vis_path, overlay)
+        # cv2.imwrite(out_mask_path, I_image)
 
 
 if __name__ == '__main__':
