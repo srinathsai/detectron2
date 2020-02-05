@@ -103,7 +103,7 @@ def visualise_denspose_results(dump_file, out_folder):
                                   gamma=0)
         plt.imshow(I_image)
         plt.show()
-        plt.imshow(vis_I_image)
+        plt.imshow(overlay/255.0)
         plt.show()
         # cv2.imwrite(out_vis_path, overlay)
         # cv2.imwrite(out_mask_path, I_image)
