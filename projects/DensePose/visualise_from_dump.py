@@ -1,7 +1,5 @@
 import pickle
-
-
-
+import argparse
 
 
 def visualise_denspose_results(dump_file):
@@ -13,3 +11,11 @@ def visualise_denspose_results(dump_file):
         result_encoded = entry['pred_densepose']
         print(result_encoded)
         # iuv_arr = DensePoseResult.decode_png_data(*result_encoded)
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--dump_file', type=str)
+    args = parser.parse_args()
+
+    visualise_denspose_results(args.dump_file)
