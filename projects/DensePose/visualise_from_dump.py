@@ -44,8 +44,11 @@ def visualise_denspose_results(dump_file):
 
         I_image = np.zeros((orig_h, orig_w))
         I_image[int(h1):int(h2), int(w1):int(w2)] = iuv_arr[0, :, :]
-        print(I_image.shape)
-        plt.imshow(I_image/24)
+        U_image = np.zeros((orig_h, orig_w))
+        U_image[int(h1):int(h2), int(w1):int(w2)] = iuv_arr[1, :, :]
+        V_image = np.zeros((orig_h, orig_w))
+        V_image[int(h1):int(h2), int(w1):int(w2)] = iuv_arr[2, :, :]
+        plt.imshow(U_image)
         plt.show()
 
 if __name__ == '__main__':
