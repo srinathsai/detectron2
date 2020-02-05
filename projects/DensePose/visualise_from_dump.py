@@ -97,13 +97,13 @@ def visualise_denspose_results(dump_file, out_folder):
         vis_I_image = apply_colormap(I_image, vmin=0, vmax=24)
         vis_I_image = vis_I_image[:, :, :3].astype(np.float32)
         overlay = cv2.addWeighted(frame,
-                                  1.0,
+                                  0.8,
                                   vis_I_image,
-                                  0.5,
+                                  0.2,
                                   gamma=0)
         plt.imshow(I_image)
         plt.show()
-        plt.imshow(vis_I_image)
+        plt.imshow(overlay/255.0)
         plt.show()
         # cv2.imwrite(out_vis_path, overlay)
         # cv2.imwrite(out_mask_path, I_image)
