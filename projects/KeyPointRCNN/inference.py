@@ -53,27 +53,34 @@ def predict_on_folder(in_folder, out_folder, config_file):
     cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url(config_file)
     predictor = DefaultPredictor(cfg)
 
-    image_fnames = [f for f in sorted(os.listdir(in_folder)) if f.endswith('.png')]
+    os.makedirs(os.path.join(out_folder, 'keypoints_vis'))
 
+    image_fnames = [f for f in sorted(os.listdir(in_folder)) if f.endswith('.png')]
+    all_keypoints = []
     for fname in image_fnames:
+        print(fname)
         image = cv2.imread(os.path.join(in_folder, fname))
         orig_h, orig_w = image.shape[:2]
         outputs = predictor(image)
         bboxes = outputs['instances'].pred_boxes.tensor.cpu().numpy()
         largest_bbox_index = get_largest_centred_bounding_box(bboxes, orig_w, orig_h)
-        bbox = bboxes[largest_bbox_index]
         keypoints = outputs['instances'].pred_keypoints.cpu().numpy()
         keypoints = keypoints[largest_bbox_index]
-        print(bbox.shape, keypoints.shape)
+        all_keypoints.append(keypoints)
 
         plt.figure()
-        plt.imshow(image/255.0)
+        plt.imshow(image[:, :, ::-1]/255.0)
         for j in range(keypoints.shape[0]):
             plt.scatter(keypoints[j, 0], keypoints[j, 1])
             plt.text(keypoints[j, 0], keypoints[j, 1], str(j))
-        plt.show()
 
+        save_vis_path = os.path.join(out_folder, 'keypoints_vis', fname)
+        plt.savefig(save_vis_path, bbox_inches='tight')
 
+    all_keypoints = np.stack(all_keypoints, axis=0)
+    print(all_keypoints.shape)
+    save_keypoints_path = os.path.join(out_folder, 'keypoints.npy')
+    np.save(save_keypoints_path, all_keypoints)
 
 
 if __name__ == '__main__':
