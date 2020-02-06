@@ -75,10 +75,10 @@ def predict_on_folder(in_folder, out_folder, config_file):
             # plt.text(keypoints[j, 0], keypoints[j, 1], str(j))
             cv2.circle(image, (keypoints[j, 0], keypoints[j, 1]), 5, (0, 255, 0), -1)
             font = cv2.FONT_HERSHEY_SIMPLEX
-            fontScale = 1
-            fontColor = (255, 255, 255)
+            fontScale = 0.5
+            fontColor = (255, 0, 0)
             cv2.putText(image, str(j), (keypoints[j, 0], keypoints[j, 1]),
-                        font, fontScale, fontColor)
+                        font, fontScale, fontColor, lineType=2)
         #
         save_vis_path = os.path.join(out_folder, 'keypoints_vis', fname)
         cv2.imwrite(save_vis_path, image)
