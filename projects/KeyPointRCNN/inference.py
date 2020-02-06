@@ -3,6 +3,10 @@ import os
 import argparse
 import numpy as np
 
+import matplotlib
+matplotlib.use('TkAgg')
+import matplotlib.pyplot as plt
+
 # import some common detectron2 utilities
 from detectron2 import model_zoo
 from detectron2.engine import DefaultPredictor
@@ -58,9 +62,17 @@ def predict_on_folder(in_folder, out_folder, config_file):
         bboxes = outputs['instances'].pred_boxes.tensor.cpu().numpy()
         largest_bbox_index = get_largest_centred_bounding_box(bboxes, orig_w, orig_h)
         bbox = bboxes[largest_bbox_index]
-        keypoints = outputs['instances'].pred_keypoints.tensor.cpu().numpy()
+        keypoints = outputs['instances'].pred_keypoints.cpu().numpy()
         keypoints = keypoints[largest_bbox_index]
         print(bbox.shape, keypoints.shape)
+
+        plt.figure()
+        plt.imshow(image/255.0)
+        for j in range(keypoints.shape[0]):
+            plt.scatter(keypoints[j, 1], keypoints[j, 2])
+            plt.text(keypoints[j, 1], keypoints[j, 2], str(j))
+        plt.show()
+
 
 
 
