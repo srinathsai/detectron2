@@ -1,6 +1,7 @@
 import cv2
 import os
 import argparse
+import numpy as np
 
 # import some common detectron2 utilities
 from detectron2 import model_zoo
@@ -16,6 +17,30 @@ from detectron2.data import MetadataCatalog
 # TODO write code to extract keypoints of largest + central bounding box person (like in DensePose) and save as npy + save vis
 
 
+def get_largest_centred_bounding_box(bboxes, orig_w, orig_h):
+    """
+    Args:
+        bboxes: (N, 4) array of x1 y1 x2 y2 bounding boxes.
+
+    Returns:
+        Index of largest and roughtly centred bounding box.
+    """
+    bboxes_area = (bboxes[:, 2] - bboxes[:, 0]) * (bboxes[:, 3] - bboxes[:, 1])
+    sorted_bbox_indices = np.argsort(bboxes_area)[::-1]
+    bbox_found = False
+    i = 0
+    while not bbox_found:
+        bbox_index = sorted_bbox_indices[i]
+        bbox = bboxes[bbox_index]
+        bbox_centre = ((bbox[0] + bbox[2]) / 2.0, (bbox[1] + bbox[3]) / 2.0)
+        if abs(bbox_centre[0] - orig_w / 2.0) < 50 and abs(bbox_centre[1] - orig_h / 2.0) < 50:
+            largest_bbox_index = bbox_index
+            bbox_found = True
+        i += 1
+
+    return largest_bbox_index
+
+
 def predict_on_folder(in_folder, out_folder, config_file):
     cfg = get_cfg()
     cfg.merge_from_file(
@@ -28,10 +53,13 @@ def predict_on_folder(in_folder, out_folder, config_file):
 
     for fname in image_fnames:
         image = cv2.imread(os.path.join(in_folder, fname))
+        orig_h, orig_w = image.shape[:2]
         outputs = predictor(image)
-        bboxes = outputs['instances'].pred_boxes
-        print(bboxes)
-
+        bboxes = outputs['instances'].pred_boxes.cpu().numpy()
+        largest_bbox_index = get_largest_centred_bounding_box(bboxes, orig_w, orig_h)
+        bbox = bboxes[largest_bbox_index]
+        keypoints = outputs['instances'].pred_keypooints[largest_bbox_index].cpu().numpy()
+        print(bbox.shape, keypoints.shape)
 
 
 
