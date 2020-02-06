@@ -76,6 +76,7 @@ def predict_on_folder(in_folder, out_folder, config_file):
 
         save_vis_path = os.path.join(out_folder, 'keypoints_vis', fname)
         plt.savefig(save_vis_path, bbox_inches='tight')
+        plt.close()
 
     all_keypoints = np.stack(all_keypoints, axis=0)
     print(all_keypoints.shape)
