@@ -53,7 +53,7 @@ def predict_on_folder(in_folder, out_folder, config_file):
     cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url(config_file)
     predictor = DefaultPredictor(cfg)
 
-    os.makedirs(os.path.join(out_folder, 'keypoints_vis'))
+    os.makedirs(os.path.join(out_folder, 'keypoints_vis'), exist_ok=True)
 
     image_fnames = [f for f in sorted(os.listdir(in_folder)) if f.endswith('.png')]
     all_keypoints = []
