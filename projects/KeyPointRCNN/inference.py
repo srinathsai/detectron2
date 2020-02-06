@@ -29,7 +29,7 @@ def predict_on_folder(in_folder, out_folder, config_file):
     for fname in image_fnames:
         image = cv2.imread(os.path.join(in_folder, fname))
         outputs = predictor(image)
-        print(outputs.keys)
+        print(outputs.keys())
         print(outputs['instances'])
 
 
