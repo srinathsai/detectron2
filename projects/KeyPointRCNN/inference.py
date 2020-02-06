@@ -69,8 +69,8 @@ def predict_on_folder(in_folder, out_folder, config_file):
         plt.figure()
         plt.imshow(image/255.0)
         for j in range(keypoints.shape[0]):
-            plt.scatter(keypoints[j, 1], keypoints[j, 2])
-            plt.text(keypoints[j, 1], keypoints[j, 2], str(j))
+            plt.scatter(keypoints[j, 0], keypoints[j, 1])
+            plt.text(keypoints[j, 0], keypoints[j, 1], str(j))
         plt.show()
 
 
