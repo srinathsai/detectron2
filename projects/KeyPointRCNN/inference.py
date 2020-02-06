@@ -63,6 +63,7 @@ def predict_on_folder(in_folder, out_folder, config_file):
         orig_h, orig_w = image.shape[:2]
         outputs = predictor(image)
         bboxes = outputs['instances'].pred_boxes.tensor.cpu().numpy()
+        print(bboxes.shape)
         largest_bbox_index = get_largest_centred_bounding_box(bboxes, orig_w, orig_h)
         keypoints = outputs['instances'].pred_keypoints.cpu().numpy()
         keypoints = keypoints[largest_bbox_index]
