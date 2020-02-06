@@ -68,15 +68,18 @@ def predict_on_folder(in_folder, out_folder, config_file):
         keypoints = keypoints[largest_bbox_index]
         all_keypoints.append(keypoints)
 
-        plt.figure()
-        plt.imshow(image[:, :, ::-1]/255.0)
+        # plt.figure()
+        # plt.imshow(image[:, :, ::-1]/255.0)
         for j in range(keypoints.shape[0]):
-            plt.scatter(keypoints[j, 0], keypoints[j, 1])
-            plt.text(keypoints[j, 0], keypoints[j, 1], str(j))
+            # plt.scatter(keypoints[j, 0], keypoints[j, 1])
+            # plt.text(keypoints[j, 0], keypoints[j, 1], str(j))
+            cv2.circle(image, (keypoints[j, 0], keypoints[j, 1]), 5, (0, 255, 0), -1)
 
+        #
         save_vis_path = os.path.join(out_folder, 'keypoints_vis', fname)
-        plt.savefig(save_vis_path, bbox_inches='tight')
-        plt.close()
+        cv2.imwrite(save_vis_path, image)
+        # plt.savefig(save_vis_path, bbox_inches='tight')
+        # plt.close()
 
     all_keypoints = np.stack(all_keypoints, axis=0)
     print(all_keypoints.shape)
