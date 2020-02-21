@@ -59,12 +59,17 @@ def visualise_denspose_results(dump_file, out_folder):
         if out_folder == 'dataset':
             out_vis_path = frame_fname.replace('cropped_frames', 'densepose_vis')
             out_mask_path = frame_fname.replace('cropped_frames', 'densepose_masks')
-        else:
-            raise NotImplementedError
 
-        if not os.path.exists(os.path.dirname(out_vis_path)):
-            os.makedirs(os.path.dirname(out_vis_path))
-            os.makedirs(os.path.dirname(out_mask_path))
+            if not os.path.exists(os.path.dirname(out_vis_path)):
+                os.makedirs(os.path.dirname(out_vis_path))
+                os.makedirs(os.path.dirname(out_mask_path))
+        else:
+            out_vis_path = os.path.join(out_folder, 'densepose_vis')
+            out_mask_path = os.path.join(out_folder, 'densepose_mask')
+
+            if not os.path.exists(out_vis_path):
+                os.makedirs(out_vis_path)
+                os.makedirs(out_mask_path)
 
         frame = cv2.imread(frame_fname)
         frame = frame.astype(np.float32)
