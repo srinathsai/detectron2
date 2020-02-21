@@ -103,6 +103,8 @@ if __name__ == '__main__':
 
     if args.out_folder == 'dataset':
         out_folder = args.in_folder.replace('cropped_frames', 'keypoint_rcnn_results')
+    elif args.out_folder == 'h36m':
+        out_folder = args.in_folder.replace('cropped_frames', 'keypoint_rcnn_results')
     else:
         out_folder = args.out_folder
 
