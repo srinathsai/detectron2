@@ -64,8 +64,8 @@ def visualise_denspose_results(dump_file, out_folder):
                 os.makedirs(os.path.dirname(out_vis_path))
                 os.makedirs(os.path.dirname(out_mask_path))
         elif out_folder == 'h36m':
-            out_vis_path = frame_fname.replace('eval_images', 'densepose_vis')
-            out_mask_path = frame_fname.replace('eval_images', 'densepose_masks')
+            out_vis_path = frame_fname.replace('cropped_frames', 'densepose_vis')
+            out_mask_path = frame_fname.replace('cropped_frames', 'densepose_masks')
 
             if not os.path.exists(os.path.dirname(out_vis_path)):
                 os.makedirs(os.path.dirname(out_vis_path))
