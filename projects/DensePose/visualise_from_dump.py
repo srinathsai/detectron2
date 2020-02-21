@@ -63,13 +63,15 @@ def visualise_denspose_results(dump_file, out_folder):
             if not os.path.exists(os.path.dirname(out_vis_path)):
                 os.makedirs(os.path.dirname(out_vis_path))
                 os.makedirs(os.path.dirname(out_mask_path))
-        else:
-            out_vis_path = os.path.join(out_folder, 'densepose_vis')
-            out_mask_path = os.path.join(out_folder, 'densepose_mask')
+        elif out_folder == 'h36m':
+            out_vis_path = frame_fname.replace('eval_images', 'densepose_vis')
+            out_mask_path = frame_fname.replace('eval_images', 'densepose_masks')
 
-            if not os.path.exists(out_vis_path):
-                os.makedirs(out_vis_path)
-                os.makedirs(out_mask_path)
+            if not os.path.exists(os.path.dirname(out_vis_path)):
+                os.makedirs(os.path.dirname(out_vis_path))
+                os.makedirs(os.path.dirname(out_mask_path))
+        else:
+            raise NotImplementedError
 
         frame = cv2.imread(frame_fname)
         frame = frame.astype(np.float32)
