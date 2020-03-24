@@ -61,15 +61,14 @@ def get_largest_centred_mask(human_masks, orig_w, orig_h):
         mask_index = sorted_mask_indices[i]
         mask = human_masks[mask_index, :, :]
         mask_pixels = np.argwhere(mask != 0)
-        mask_centre = np.mean(mask_pixels, axis=0)
+        mask_centre = np.mean(mask_pixels, axis=0)  # Centre in rows, columns (i.e. height, width)
         print(mask.shape, mask_pixels.shape, mask_centre.shape, mask_centre)
-        # bbox_centre = ((bbox[0] + bbox[2]) / 2.0, (bbox[1] + bbox[3]) / 2.0)
-        # if abs(bbox_centre[0] - orig_w / 2.0) < 50 and abs(bbox_centre[1] - orig_h / 2.0) < 50:
-        #     largest_bbox_index = bbox_index
-        #     bbox_found = True
-        # i += 1
+        if abs(mask_centre[0] - orig_h / 2.0) < 50 and abs(mask_centre[1] - orig_w / 2.0) < 50:
+            largest_mask_index = mask_index
+            mask_found = True
+        i += 1
 
-    # return largest_bbox_index
+    return largest_mask_index
 
 
 def main(args):
@@ -95,7 +94,6 @@ def main(args):
         human_masks = human_masks.cpu().detach().numpy()
         largest_sum_mask_index = np.argmax(np.sum(human_masks, axis=(1, 2)), axis=0)
         human_mask = human_masks[largest_sum_mask_index, :, :].astype(np.uint8)
-        print('finding largest centred mask')
         get_largest_centred_mask(human_masks, orig_w, orig_h)
         overlay = cv2.addWeighted(input, 1.0,
                                   255 * np.tile(human_mask[:, :, None], [1, 1, 3]),
