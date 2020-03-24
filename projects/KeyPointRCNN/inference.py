@@ -18,7 +18,6 @@ from detectron2.data import MetadataCatalog
 # predictor returns bboxes, classes and pred keypoints
 # pred keypoints has shape (N, K, 3): N = num instances, K = num keypoints (17), the 3 is
 # (x, y, visibility/score/confidence)
-# TODO write code to extract keypoints of largest + central bounding box person (like in DensePose) and save as npy + save vis
 
 
 def get_largest_centred_bounding_box(bboxes, orig_w, orig_h):

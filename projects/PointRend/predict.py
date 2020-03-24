@@ -32,7 +32,6 @@ from detectron2.evaluation import (
 from point_rend import add_pointrend_config
 
 
-
 def setup(args):
     """
     Create configs and perform basic setups.
@@ -44,6 +43,33 @@ def setup(args):
     cfg.freeze()
     default_setup(cfg, args)
     return cfg
+
+
+def get_largest_centred_mask(human_masks, orig_w, orig_h):
+    """
+    Args:
+        bboxes: (N, 4) array of x1 y1 x2 y2 bounding boxes.
+
+    Returns:
+        Index of largest and roughtly centred bounding box.
+    """
+    mask_areas = np.sum(human_masks, axis=(1, 2))
+    sorted_mask_indices = np.argsort(mask_areas)[::-1]
+    mask_found = False
+    i = 0
+    while not mask_found:
+        mask_index = sorted_mask_indices[i]
+        mask = human_masks[mask_index, :, :]
+        mask_pixels = np.argwhere(mask != 0)
+        mask_centre = np.mean(mask_pixels, axis=0)
+        print(mask.shape, mask_pixels.shape, mask_centre.shape, mask_centre)
+        # bbox_centre = ((bbox[0] + bbox[2]) / 2.0, (bbox[1] + bbox[3]) / 2.0)
+        # if abs(bbox_centre[0] - orig_w / 2.0) < 50 and abs(bbox_centre[1] - orig_h / 2.0) < 50:
+        #     largest_bbox_index = bbox_index
+        #     bbox_found = True
+        # i += 1
+
+    # return largest_bbox_index
 
 
 def main(args):
@@ -61,6 +87,7 @@ def main(args):
     for fname in image_fnames:
         print(fname)
         input = cv2.imread(os.path.join(input_folder, fname))
+        orig_h, orig_w = input.shape[:2]
         outputs = pred(input)['instances']
         classes = outputs.pred_classes
         masks = outputs.pred_masks
@@ -68,6 +95,8 @@ def main(args):
         human_masks = human_masks.cpu().detach().numpy()
         largest_sum_mask_index = np.argmax(np.sum(human_masks, axis=(1, 2)), axis=0)
         human_mask = human_masks[largest_sum_mask_index, :, :].astype(np.uint8)
+        print('finding largest centred mask')
+        get_largest_centred_mask(human_masks, orig_w, orig_h)
         overlay = cv2.addWeighted(input, 1.0,
                                   255 * np.tile(human_mask[:, :, None], [1, 1, 3]),
                                   0.5, gamma=0)
