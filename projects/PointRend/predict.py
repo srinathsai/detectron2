@@ -127,5 +127,6 @@ if __name__ == "__main__":
         nargs=argparse.REMAINDER,
     )
     args = parser.parse_args()
+    print("Command Line Args:", args)
     main(args)
 

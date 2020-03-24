@@ -36,7 +36,7 @@ def get_largest_centred_bounding_box(bboxes, orig_w, orig_h):
         bbox_index = sorted_bbox_indices[i]
         bbox = bboxes[bbox_index]
         bbox_centre = ((bbox[0] + bbox[2]) / 2.0, (bbox[1] + bbox[3]) / 2.0)
-        if abs(bbox_centre[0] - orig_w / 2.0) < 50 and abs(bbox_centre[1] - orig_h / 2.0) < 50:
+        if abs(bbox_centre[0] - orig_w / 2.0) < 80 and abs(bbox_centre[1] - orig_h / 2.0) < 80:
             largest_bbox_index = bbox_index
             bbox_found = True
         i += 1
@@ -62,6 +62,7 @@ def predict_on_folder(in_folder, out_folder, config_file):
         orig_h, orig_w = image.shape[:2]
         outputs = predictor(image)
         bboxes = outputs['instances'].pred_boxes.tensor.cpu().numpy()
+        print(bboxes.shape, bboxes)
         if bboxes.shape[0] == 0:
             keypoints = np.zeros((17, 3))
             all_keypoints.append(keypoints)
