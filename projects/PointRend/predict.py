@@ -92,8 +92,8 @@ def main(args):
         masks = outputs.pred_masks
         human_masks = masks[classes == 0]
         human_masks = human_masks.cpu().detach().numpy()
-        largest_sum_mask_index = np.argmax(np.sum(human_masks, axis=(1, 2)), axis=0)
-        human_mask = human_masks[largest_sum_mask_index, :, :].astype(np.uint8)
+        largest_centred_mask_index = get_largest_centred_mask(human_masks, orig_w, orig_h)
+        human_mask = human_masks[largest_centred_mask_index, :, :].astype(np.uint8)
         get_largest_centred_mask(human_masks, orig_w, orig_h)
         overlay = cv2.addWeighted(input, 1.0,
                                   255 * np.tile(human_mask[:, :, None], [1, 1, 3]),
