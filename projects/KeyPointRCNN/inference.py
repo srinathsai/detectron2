@@ -61,7 +61,7 @@ def predict_on_folder(in_folder, out_folder, config_file, save_kps_in_separate_f
         os.makedirs(os.path.join(out_folder, 'keypoints'), exist_ok=True)
 
     image_fnames = [f for f in sorted(os.listdir(in_folder)) if f.endswith('.png')]
-    # all_keypoints = []
+    all_keypoints = []
     for fname in image_fnames:
         print(fname)
         image = cv2.imread(os.path.join(in_folder, fname))
