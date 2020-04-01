@@ -82,27 +82,31 @@ def visualise_denspose_results(dump_file, out_folder):
         bboxes_xyxy = entry['pred_boxes_XYXY'].numpy()
         bboxes_area = (bboxes_xyxy[:, 2] - bboxes_xyxy[:, 0]) \
                       * (bboxes_xyxy[:, 3] - bboxes_xyxy[:, 1])
-        # largest_bbox_index = np.argmax(bboxes_area)
+        # largest_centred_bbox_index = np.argmax(bboxes_area)
         sorted_bbox_indices = np.argsort(bboxes_area)[::-1]
         bbox_found = False
         i = 0
         print(bboxes_xyxy)
         print(bboxes_area)
         print(sorted_bbox_indices)
-        while not bbox_found:
+        while not bbox_found and i < sorted_bbox_indices.shape[0]:
             bbox_index = sorted_bbox_indices[i]
             bbox = bboxes_xyxy[bbox_index]
             bbox_centre = ((bbox[0]+bbox[2])/2.0, (bbox[1]+bbox[3])/2.0)
-            if abs(bbox_centre[0] - orig_w/2.0) < 200 and abs(bbox_centre[1] - orig_h/2.0) < 200:
-                largest_bbox_index = bbox_index
+            if abs(bbox_centre[0] - orig_w/2.0) < 100 and abs(bbox_centre[1] - orig_h/2.0) < 100:
+                largest_centred_bbox_index = bbox_index
                 bbox_found = True
             i += 1
 
-        result_encoded = entry['pred_densepose'].results[largest_bbox_index]
+        # If can't find bbox sufficiently close to centre, just use biggest mask as prediction
+        if not bbox_found:
+            largest_centred_bbox_index = sorted_bbox_indices[0]
+
+        result_encoded = entry['pred_densepose'].results[largest_centred_bbox_index]
         iuv_arr = DensePoseResult.decode_png_data(*result_encoded)
 
         # Round bbox to int
-        largest_bbox = bboxes_xyxy[largest_bbox_index]
+        largest_bbox = bboxes_xyxy[largest_centred_bbox_index]
         w1 = largest_bbox[0]
         w2 = largest_bbox[0] + iuv_arr.shape[2]
         h1 = largest_bbox[1]

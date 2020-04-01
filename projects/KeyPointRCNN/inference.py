@@ -41,7 +41,7 @@ def get_largest_centred_bounding_box(bboxes, orig_w, orig_h):
             bbox_found = True
         i += 1
 
-        # If can't find mask sufficiently close to centre, just use biggest mask as prediction
+    # If can't find bbox sufficiently close to centre, just use biggest bbox as prediction
     if not bbox_found:
         largest_centred_bbox_index = sorted_bbox_indices[0]
 
