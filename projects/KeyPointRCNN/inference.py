@@ -37,7 +37,8 @@ def get_largest_centred_bounding_box(bboxes, orig_w, orig_h):
         bbox_index = sorted_bbox_indices[i]
         bbox = bboxes[bbox_index]
         bbox_centre = ((bbox[0] + bbox[2]) / 2.0, (bbox[1] + bbox[3]) / 2.0)
-        if abs(bbox_centre[0] - orig_w / 2.0) < 80 and abs(bbox_centre[1] - orig_h / 2.0) < 80:
+        print('centre', bbox_centre)
+        if abs(bbox_centre[0] - orig_w / 2.0) < 128 and abs(bbox_centre[1] - orig_h / 2.0) < 128:
             largest_bbox_index = bbox_index
             bbox_found = True
         i += 1
@@ -45,7 +46,7 @@ def get_largest_centred_bounding_box(bboxes, orig_w, orig_h):
     return largest_bbox_index
 
 
-def predict_on_folder(in_folder, out_folder, config_file):
+def predict_on_folder(in_folder, out_folder, config_file, save_kps_in_separate_files=False):
     cfg = get_cfg()
     cfg.merge_from_file(
         model_zoo.get_config_file(config_file))
@@ -54,6 +55,8 @@ def predict_on_folder(in_folder, out_folder, config_file):
     predictor = DefaultPredictor(cfg)
 
     os.makedirs(os.path.join(out_folder, 'keypoints_vis'), exist_ok=True)
+    if save_kps_in_separate_files:
+        os.makedirs(os.path.join(out_folder, 'keypoints'), exist_ok=True)
 
     image_fnames = [f for f in sorted(os.listdir(in_folder)) if f.endswith('.png')]
     all_keypoints = []
@@ -71,7 +74,13 @@ def predict_on_folder(in_folder, out_folder, config_file):
             largest_bbox_index = get_largest_centred_bounding_box(bboxes, orig_w, orig_h)
             keypoints = outputs['instances'].pred_keypoints.cpu().numpy()
             keypoints = keypoints[largest_bbox_index]
-            all_keypoints.append(keypoints)
+
+            if not save_kps_in_separate_files:
+                all_keypoints.append(keypoints)
+            else:
+                print(keypoints.shape)
+                save_keypoints_path = os.path.join(out_folder, 'keypoints', os.path.splitext(fname)[0] + '.npy')
+                np.save(save_keypoints_path, keypoints)
 
             for j in range(keypoints.shape[0]):
                 cv2.circle(image, (keypoints[j, 0], keypoints[j, 1]), 5, (0, 255, 0), -1)
@@ -83,10 +92,11 @@ def predict_on_folder(in_folder, out_folder, config_file):
             save_vis_path = os.path.join(out_folder, 'keypoints_vis', fname)
             cv2.imwrite(save_vis_path, image)
 
-    all_keypoints = np.stack(all_keypoints, axis=0)
-    print(all_keypoints.shape)
-    save_keypoints_path = os.path.join(out_folder, 'keypoints.npy')
-    np.save(save_keypoints_path, all_keypoints)
+    if not save_kps_in_separate_files:
+        all_keypoints = np.stack(all_keypoints, axis=0)
+        print(all_keypoints.shape)
+        save_keypoints_path = os.path.join(out_folder, 'keypoints.npy')
+        np.save(save_keypoints_path, all_keypoints)
 
 
 if __name__ == '__main__':
@@ -96,6 +106,7 @@ if __name__ == '__main__':
                         help='config file name relative to detectron2 configs directory')
     parser.add_argument('--out_folder', type=str)
     parser.add_argument('--gpu', type=str)
+    parser.add_argument('--save_kps_separate', action='store_true')
     args = parser.parse_args()
 
     os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"  # see issue #152
@@ -108,4 +119,4 @@ if __name__ == '__main__':
     else:
         out_folder = args.out_folder
 
-    predict_on_folder(args.in_folder, out_folder, args.config_file)
+    predict_on_folder(args.in_folder, out_folder, args.config_file, save_kps_in_separate_files=args.save_kps_separate)

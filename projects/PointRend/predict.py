@@ -8,7 +8,7 @@ The output file name is currently set up for the sports_videos_smpl dataset - CH
 
 import os
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"   # see issue #152
-os.environ["CUDA_VISIBLE_DEVICES"] = "7"
+os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 import torch
 import argparse
 import numpy as np
@@ -66,15 +66,16 @@ def main(args):
         masks = outputs.pred_masks
         human_masks = masks[classes == 0]
         human_masks = human_masks.cpu().detach().numpy()
-        largest_sum_mask_index = np.argmax(np.sum(human_masks, axis=(1, 2)), axis=0)
-        human_mask = human_masks[largest_sum_mask_index, :, :].astype(np.uint8)
-        overlay = cv2.addWeighted(input, 1.0,
-                                  255 * np.tile(human_mask[:, :, None], [1, 1, 3]),
-                                  0.5, gamma=0)
-        save_vis_path = os.path.join(output_vis_folder, fname)
-        save_mask_path = os.path.join(output_masks_folder, fname)
-        cv2.imwrite(save_vis_path, overlay)
-        cv2.imwrite(save_mask_path, human_mask)
+        if human_masks.shape[0] != 0:
+            largest_sum_mask_index = np.argmax(np.sum(human_masks, axis=(1, 2)), axis=0)
+            human_mask = human_masks[largest_sum_mask_index, :, :].astype(np.uint8)
+            overlay = cv2.addWeighted(input, 1.0,
+                                      255 * np.tile(human_mask[:, :, None], [1, 1, 3]),
+                                      0.5, gamma=0)
+            save_vis_path = os.path.join(output_vis_folder, fname)
+            save_mask_path = os.path.join(output_masks_folder, fname)
+            cv2.imwrite(save_vis_path, overlay)
+            cv2.imwrite(save_mask_path, human_mask)
 
 
 if __name__ == "__main__":
