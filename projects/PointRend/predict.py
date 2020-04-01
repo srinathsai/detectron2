@@ -32,7 +32,6 @@ from detectron2.evaluation import (
 from point_rend import add_pointrend_config
 
 
-
 def setup(args):
     """
     Create configs and perform basic setups.
@@ -44,6 +43,38 @@ def setup(args):
     cfg.freeze()
     default_setup(cfg, args)
     return cfg
+
+
+def get_largest_centred_mask(human_masks, orig_w, orig_h):
+    """
+    Args:
+        human_masks: (N, img_wh, img_wh) human segmentation masks from a single image.
+    Returns:
+        Index of largest roughly-centred human mask.
+    """
+    mask_areas = np.sum(human_masks, axis=(1, 2))
+    sorted_mask_indices = np.argsort(mask_areas)[::-1]  # Indices of masks sorted by area.
+    mask_found = False
+    i = 0
+    while not mask_found and i < sorted_mask_indices.shape[0]:
+        mask_index = sorted_mask_indices[i]
+        mask = human_masks[mask_index, :, :]
+        mask_pixels = np.argwhere(mask != 0)
+        bbox_corners = np.amin(mask_pixels, axis=0), np.amax(mask_pixels, axis=0)  # (row_min, col_min, row_max, col_max)
+        bbox_centre = ((bbox_corners[0] + bbox_corners[2]) / 2.0,
+                       (bbox_corners[1] + bbox_corners[3]) / 2.0)  # Centre in rows, columns (i.e. height, width)
+
+        print(mask.shape, mask_pixels.shape, bbox_centre.shape, bbox_centre)
+        if abs(bbox_centre[0] - orig_h / 2.0) < 120 and abs(bbox_centre[1] - orig_w / 2.0) < 70:
+            largest_centred_mask_index = mask_index
+            mask_found = True
+        i += 1
+
+    # If can't find mask sufficiently close to centre, just use biggest mask as prediction
+    if not mask_found:
+        largest_centred_mask_index = sorted_mask_indices[0]
+
+    return largest_centred_mask_index
 
 
 def main(args):
@@ -61,21 +92,21 @@ def main(args):
     for fname in image_fnames:
         print(fname)
         input = cv2.imread(os.path.join(input_folder, fname))
+        orig_h, orig_w = input.shape[:2]
         outputs = pred(input)['instances']
         classes = outputs.pred_classes
         masks = outputs.pred_masks
         human_masks = masks[classes == 0]
         human_masks = human_masks.cpu().detach().numpy()
-        if human_masks.shape[0] != 0:
-            largest_sum_mask_index = np.argmax(np.sum(human_masks, axis=(1, 2)), axis=0)
-            human_mask = human_masks[largest_sum_mask_index, :, :].astype(np.uint8)
-            overlay = cv2.addWeighted(input, 1.0,
-                                      255 * np.tile(human_mask[:, :, None], [1, 1, 3]),
-                                      0.5, gamma=0)
-            save_vis_path = os.path.join(output_vis_folder, fname)
-            save_mask_path = os.path.join(output_masks_folder, fname)
-            cv2.imwrite(save_vis_path, overlay)
-            cv2.imwrite(save_mask_path, human_mask)
+        largest_centred_mask_index = get_largest_centred_mask(human_masks, orig_w, orig_h)
+        human_mask = human_masks[largest_centred_mask_index, :, :].astype(np.uint8)
+        overlay = cv2.addWeighted(input, 1.0,
+                                  255 * np.tile(human_mask[:, :, None], [1, 1, 3]),
+                                  0.5, gamma=0)
+        save_vis_path = os.path.join(output_vis_folder, fname)
+        save_mask_path = os.path.join(output_masks_folder, fname)
+        cv2.imwrite(save_vis_path, overlay)
+        cv2.imwrite(save_mask_path, human_mask)
 
 
 if __name__ == "__main__":
