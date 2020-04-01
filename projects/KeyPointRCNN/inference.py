@@ -61,7 +61,7 @@ def predict_on_folder(in_folder, out_folder, config_file, save_kps_in_separate_f
         os.makedirs(os.path.join(out_folder, 'keypoints'), exist_ok=True)
 
     image_fnames = [f for f in sorted(os.listdir(in_folder)) if f.endswith('.png')]
-    # all_keypoints = []
+    all_keypoints = []
     for fname in image_fnames:
         print(fname)
         image = cv2.imread(os.path.join(in_folder, fname))
@@ -71,7 +71,7 @@ def predict_on_folder(in_folder, out_folder, config_file, save_kps_in_separate_f
         print(bboxes.shape, bboxes)
         if bboxes.shape[0] == 0:  # Can't find any people in image
             keypoints = np.zeros((17, 3))
-            # all_keypoints.append(keypoints)
+            all_keypoints.append(keypoints)
         else:
             largest_bbox_index = get_largest_centred_bounding_box(bboxes, orig_w, orig_h)
             keypoints = outputs['instances'].pred_keypoints.cpu().numpy()
