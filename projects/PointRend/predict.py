@@ -60,9 +60,9 @@ def get_largest_centred_mask(human_masks, orig_w, orig_h):
         mask_index = sorted_mask_indices[i]
         mask = human_masks[mask_index, :, :]
         mask_pixels = np.argwhere(mask != 0)
-        bbox_corners = np.amin(mask_pixels, axis=0), np.amax(mask_pixels, axis=0)  # (row_min, col_min, row_max, col_max)
-        bbox_centre = ((bbox_corners[0] + bbox_corners[2]) / 2.0,
-                       (bbox_corners[1] + bbox_corners[3]) / 2.0)  # Centre in rows, columns (i.e. height, width)
+        bbox_corners = np.amin(mask_pixels, axis=0), np.amax(mask_pixels, axis=0)  # (row_min, col_min), (row_max, col_max)
+        bbox_centre = ((bbox_corners[0][0] + bbox_corners[1][0]) / 2.0,
+                       (bbox_corners[0][1] + bbox_corners[1][1]) / 2.0)  # Centre in rows, columns (i.e. height, width)
 
         print(mask.shape, mask_pixels.shape, bbox_centre.shape, bbox_centre)
         if abs(bbox_centre[0] - orig_h / 2.0) < 120 and abs(bbox_centre[1] - orig_w / 2.0) < 70:
