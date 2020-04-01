@@ -48,27 +48,33 @@ def setup(args):
 def get_largest_centred_mask(human_masks, orig_w, orig_h):
     """
     Args:
-        bboxes: (N, 4) array of x1 y1 x2 y2 bounding boxes.
-
+        human_masks: (N, img_wh, img_wh) human segmentation masks from a single image.
     Returns:
-        Index of largest and roughtly centred bounding box.
+        Index of largest roughly-centred human mask.
     """
     mask_areas = np.sum(human_masks, axis=(1, 2))
-    sorted_mask_indices = np.argsort(mask_areas)[::-1]
+    sorted_mask_indices = np.argsort(mask_areas)[::-1]  # Indices of masks sorted by area.
     mask_found = False
     i = 0
-    while not mask_found:
+    while not mask_found and i < sorted_mask_indices.shape[0]:
         mask_index = sorted_mask_indices[i]
         mask = human_masks[mask_index, :, :]
         mask_pixels = np.argwhere(mask != 0)
-        mask_centre = np.mean(mask_pixels, axis=0)  # Centre in rows, columns (i.e. height, width)
-        print(mask.shape, mask_pixels.shape, mask_centre.shape, mask_centre)
-        if abs(mask_centre[0] - orig_h / 2.0) < 50 and abs(mask_centre[1] - orig_w / 2.0) < 50:
-            largest_mask_index = mask_index
+        bbox_corners = np.amin(mask_pixels, axis=0), np.amax(mask_pixels, axis=0)  # (row_min, col_min, row_max, col_max)
+        bbox_centre = ((bbox_corners[0] + bbox_corners[2]) / 2.0,
+                       (bbox_corners[1] + bbox_corners[3]) / 2.0)  # Centre in rows, columns (i.e. height, width)
+
+        print(mask.shape, mask_pixels.shape, bbox_centre.shape, bbox_centre)
+        if abs(bbox_centre[0] - orig_h / 2.0) < 120 and abs(bbox_centre[1] - orig_w / 2.0) < 70:
+            largest_centred_mask_index = mask_index
             mask_found = True
         i += 1
 
-    return largest_mask_index
+    # If can't find mask sufficiently close to centre, just use biggest mask as prediction
+    if not mask_found:
+        largest_centred_mask_index = sorted_mask_indices[0]
+
+    return largest_centred_mask_index
 
 
 def main(args):

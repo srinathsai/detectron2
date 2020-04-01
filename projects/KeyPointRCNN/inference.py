@@ -29,19 +29,23 @@ def get_largest_centred_bounding_box(bboxes, orig_w, orig_h):
         Index of largest and roughtly centred bounding box.
     """
     bboxes_area = (bboxes[:, 2] - bboxes[:, 0]) * (bboxes[:, 3] - bboxes[:, 1])
-    sorted_bbox_indices = np.argsort(bboxes_area)[::-1]
+    sorted_bbox_indices = np.argsort(bboxes_area)[::-1]  # Indices of bboxes sorted by area.
     bbox_found = False
     i = 0
-    while not bbox_found:
+    while not bbox_found and i < sorted_bbox_indices.shape[0]:
         bbox_index = sorted_bbox_indices[i]
         bbox = bboxes[bbox_index]
-        bbox_centre = ((bbox[0] + bbox[2]) / 2.0, (bbox[1] + bbox[3]) / 2.0)
+        bbox_centre = ((bbox[0] + bbox[2]) / 2.0, (bbox[1] + bbox[3]) / 2.0)  # Centre in width, height
         if abs(bbox_centre[0] - orig_w / 2.0) < 80 and abs(bbox_centre[1] - orig_h / 2.0) < 80:
-            largest_bbox_index = bbox_index
+            largest_centred_bbox_index = bbox_index
             bbox_found = True
         i += 1
 
-    return largest_bbox_index
+        # If can't find mask sufficiently close to centre, just use biggest mask as prediction
+    if not bbox_found:
+        largest_centred_bbox_index = sorted_bbox_indices[0]
+
+    return largest_centred_bbox_index
 
 
 def predict_on_folder(in_folder, out_folder, config_file):
@@ -63,7 +67,7 @@ def predict_on_folder(in_folder, out_folder, config_file):
         outputs = predictor(image)
         bboxes = outputs['instances'].pred_boxes.tensor.cpu().numpy()
         print(bboxes.shape, bboxes)
-        if bboxes.shape[0] == 0:
+        if bboxes.shape[0] == 0:  # Can't find any people in image
             keypoints = np.zeros((17, 3))
             all_keypoints.append(keypoints)
         else:
