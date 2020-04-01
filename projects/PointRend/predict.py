@@ -64,7 +64,7 @@ def get_largest_centred_mask(human_masks, orig_w, orig_h):
         bbox_centre = ((bbox_corners[0][0] + bbox_corners[1][0]) / 2.0,
                        (bbox_corners[0][1] + bbox_corners[1][1]) / 2.0)  # Centre in rows, columns (i.e. height, width)
 
-        print(mask.shape, mask_pixels.shape, bbox_centre.shape, bbox_centre)
+        print(mask.shape, mask_pixels.shape, bbox_centre)
         if abs(bbox_centre[0] - orig_h / 2.0) < 120 and abs(bbox_centre[1] - orig_w / 2.0) < 70:
             largest_centred_mask_index = mask_index
             mask_found = True
