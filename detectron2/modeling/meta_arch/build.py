@@ -16,5 +16,4 @@ def build_model(cfg):
     Note that it does not load any weights from ``cfg``.
     """
     meta_arch = cfg.MODEL.META_ARCHITECTURE
-    print(META_ARCH_REGISTRY._obj_map)
     return META_ARCH_REGISTRY.get(meta_arch)(cfg)
