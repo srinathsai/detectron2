@@ -118,7 +118,7 @@ def visualise_denspose_results(dump_file, out_folder, save_uv=False, path_correc
         U_image[int(h1):int(h2), int(w1):int(w2)] = iuv_arr[1, :, :]
         V_image = np.zeros((orig_h, orig_w))
         V_image[int(h1):int(h2), int(w1):int(w2)] = iuv_arr[2, :, :]
-
+        print(I_image.max(), U_image.max(), V_image.max())
         if save_uv:
             # Save visualisation (U coordinates) and IUV image
             vis_U_image = apply_colormap(U_image, vmin=0, vmax=1)
@@ -131,6 +131,16 @@ def visualise_denspose_results(dump_file, out_folder, save_uv=False, path_correc
                                       gamma=0)
             IUV_image = np.stack([I_image, U_image, V_image], axis=2)
             print(I_image.shape, V_image.shape, U_image.shape, vis_U_image.shape, IUV_image.shape, overlay.shape)
+            plt.figure()
+            plt.subplot(221)
+            plt.imshow(overlay)
+            plt.subplot(222)
+            plt.imshow(I_image)
+            plt.subplot(223)
+            plt.imshow(U_image)
+            plt.subplot(224)
+            plt.imshow(V_image)
+            plt.show()
         else:
             # Save visualisation and I image (i.e. segmentation mask)
             vis_I_image = apply_colormap(I_image, vmin=0, vmax=24)
