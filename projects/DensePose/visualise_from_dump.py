@@ -129,18 +129,16 @@ def visualise_denspose_results(dump_file, out_folder, save_uv=False, path_correc
                                       vis_U_image,
                                       0.4,
                                       gamma=0).astype(np.int16)
-            print(overlay.max(), overlay.min(), overlay.dtype)
             IUV_image = np.stack([I_image, U_image, V_image], axis=2)
-            print(I_image.shape, V_image.shape, U_image.shape, vis_U_image.shape, IUV_image.shape, overlay.shape)
             plt.figure()
             plt.subplot(221)
             plt.imshow(overlay)
             plt.subplot(222)
-            plt.imshow(I_image)
+            plt.imshow(IUV_image[:, :, 0])
             plt.subplot(223)
-            plt.imshow(U_image)
+            plt.imshow(IUV_image[:, :, 1])
             plt.subplot(224)
-            plt.imshow(V_image)
+            plt.imshow(IUV_image[:, :, 2])
             plt.show()
         else:
             # Save visualisation and I image (i.e. segmentation mask)
@@ -152,8 +150,8 @@ def visualise_denspose_results(dump_file, out_folder, save_uv=False, path_correc
                                       vis_I_image,
                                       0.4,
                                       gamma=0)
-            # cv2.imwrite(out_vis_path, overlay)
-            # cv2.imwrite(out_mask_path, I_image)
+            cv2.imwrite(out_vis_path, overlay)
+            cv2.imwrite(out_mask_path, I_image)
 
 
 if __name__ == '__main__':
