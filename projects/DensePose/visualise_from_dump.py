@@ -118,6 +118,9 @@ def visualise_denspose_results(dump_file, out_folder, save_uv=False, path_correc
         U_image[int(h1):int(h2), int(w1):int(w2)] = iuv_arr[1, :, :]
         V_image = np.zeros((orig_h, orig_w))
         V_image[int(h1):int(h2), int(w1):int(w2)] = iuv_arr[2, :, :]
+        print(np.unique(I_image))
+        print(np.unique(U_image))
+        print(np.unique(V_image))
         if save_uv:
             # Save visualisation (U coordinates) and IUV image
             vis_U_image = np.stack([U_image]*3, axis=2).astype(np.float32)
@@ -138,9 +141,9 @@ def visualise_denspose_results(dump_file, out_folder, save_uv=False, path_correc
             # plt.imshow(IUV_image[:, :, 2])
             # plt.show()
             # print(out_mask_path, out_vis_path)
-            cv2.imwrite(out_vis_path, overlay)
-            cv2.imwrite(out_mask_path, IUV_image)
-            print(IUV_image.shape)
+            # cv2.imwrite(out_vis_path, overlay)
+            # cv2.imwrite(out_mask_path, IUV_image)
+            # print(IUV_image.shape)
         else:
             # Save visualisation and I image (i.e. segmentation mask)
             vis_I_image = apply_colormap(I_image, vmin=0, vmax=24)
