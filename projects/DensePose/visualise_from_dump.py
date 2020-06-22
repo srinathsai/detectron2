@@ -48,7 +48,7 @@ def apply_colormap(image, vmin=None, vmax=None, cmap='viridis', cmap_seed=1):
     return vis
 
 
-def visualise_denspose_results(dump_file, out_folder):
+def visualise_denspose_results(dump_file, out_folder, save_uv=False):
     with open(dump_file, 'rb') as f_results:
         data = pickle.load(f_results)
 
@@ -56,16 +56,13 @@ def visualise_denspose_results(dump_file, out_folder):
     for entry in data:
         frame_fname = entry['file_name']
         print(frame_fname)
-        if out_folder == 'dataset':
-            out_vis_path = frame_fname.replace('cropped_frames', 'densepose_vis')
-            out_mask_path = frame_fname.replace('cropped_frames', 'densepose_masks')
-
-            if not os.path.exists(os.path.dirname(out_vis_path)):
-                os.makedirs(os.path.dirname(out_vis_path))
-                os.makedirs(os.path.dirname(out_mask_path))
-        elif out_folder == 'h36m':
-            out_vis_path = frame_fname.replace('cropped_frames', 'densepose_vis')
-            out_mask_path = frame_fname.replace('cropped_frames', 'densepose_masks')
+        if out_folder == 'dataset' or out_folder == 'h36m':
+            if save_uv:
+                out_vis_path = frame_fname.replace('cropped_frames', 'densepose_iuv_vis')
+                out_mask_path = frame_fname.replace('cropped_frames', 'densepose_iuv')
+            else:
+                out_vis_path = frame_fname.replace('cropped_frames', 'densepose_vis')
+                out_mask_path = frame_fname.replace('cropped_frames', 'densepose_masks')
 
             if not os.path.exists(os.path.dirname(out_vis_path)):
                 os.makedirs(os.path.dirname(out_vis_path))
@@ -114,28 +111,43 @@ def visualise_denspose_results(dump_file, out_folder):
 
         I_image = np.zeros((orig_h, orig_w))
         I_image[int(h1):int(h2), int(w1):int(w2)] = iuv_arr[0, :, :]
-        # U_image = np.zeros((orig_h, orig_w))
-        # U_image[int(h1):int(h2), int(w1):int(w2)] = iuv_arr[1, :, :]
-        # V_image = np.zeros((orig_h, orig_w))
-        # V_image[int(h1):int(h2), int(w1):int(w2)] = iuv_arr[2, :, :]
+        U_image = np.zeros((orig_h, orig_w))
+        U_image[int(h1):int(h2), int(w1):int(w2)] = iuv_arr[1, :, :]
+        V_image = np.zeros((orig_h, orig_w))
+        V_image[int(h1):int(h2), int(w1):int(w2)] = iuv_arr[2, :, :]
 
-        # Save visualisation and I image (i.e. segmentation mask)
-        vis_I_image = apply_colormap(I_image, vmin=0, vmax=24)
-        vis_I_image = vis_I_image[:, :, :3].astype(np.float32)
-        vis_I_image[I_image == 0, :] = np.zeros(3, dtype=np.float32)
-        overlay = cv2.addWeighted(frame,
-                                  0.6,
-                                  vis_I_image,
-                                  0.4,
-                                  gamma=0)
-        cv2.imwrite(out_vis_path, overlay)
-        cv2.imwrite(out_mask_path, I_image)
+        if save_uv:
+            # Save visualisation (U coordinates) and IUV image
+            vis_U_image = apply_colormap(U_image, vmin=0, vmax=1)
+            vis_U_image = vis_U_image[:, :, :3].astype(np.float32)
+            vis_U_image[I_image == 0, :] = np.zeros(3, dtype=np.float32)
+            overlay = cv2.addWeighted(frame,
+                                      0.6,
+                                      vis_U_image,
+                                      0.4,
+                                      gamma=0)
+            IUV_image = np.stack([I_image, U_image, V_image], axis=2)
+            print(I_image.shape, V_image.shape, U_image.shape, vis_U_image.shape, IUV_image.shape, overlay.shape)
+        else:
+            # Save visualisation and I image (i.e. segmentation mask)
+            vis_I_image = apply_colormap(I_image, vmin=0, vmax=24)
+            vis_I_image = vis_I_image[:, :, :3].astype(np.float32)
+            vis_I_image[I_image == 0, :] = np.zeros(3, dtype=np.float32)
+            overlay = cv2.addWeighted(frame,
+                                      0.6,
+                                      vis_I_image,
+                                      0.4,
+                                      gamma=0)
+            cv2.imwrite(out_vis_path, overlay)
+            cv2.imwrite(out_mask_path, I_image)
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--dump_file', type=str)
     parser.add_argument('--out_folder', type=str)
+    parser.add_argument('--save_uv', action='store_true')
     args = parser.parse_args()
 
-    visualise_denspose_results(args.dump_file, args.out_folder)
+    visualise_denspose_results(args.dump_file, args.out_folder,
+                               save_uv=args.save_uv)
