@@ -120,9 +120,6 @@ def visualise_denspose_results(dump_file, out_folder, save_uv=False, path_correc
         V_image[int(h1):int(h2), int(w1):int(w2)] = iuv_arr[2, :, :]
         if save_uv:
             # Save visualisation (U coordinates) and IUV image
-            # vis_U_image = apply_colormap(U_image, vmin=0, vmax=255)
-            # vis_U_image = vis_U_image[:, :, :3].astype(np.float32)
-            # vis_U_image[I_image == 0, :] = np.zeros(3, dtype=np.float32)
             vis_U_image = np.stack([U_image]*3, axis=2).astype(np.float32)
             overlay = cv2.addWeighted(frame,
                                       0.6,
@@ -130,16 +127,19 @@ def visualise_denspose_results(dump_file, out_folder, save_uv=False, path_correc
                                       0.4,
                                       gamma=0).astype(np.int16)
             IUV_image = np.stack([I_image, U_image, V_image], axis=2)
-            plt.figure()
-            plt.subplot(221)
-            plt.imshow(overlay)
-            plt.subplot(222)
-            plt.imshow(IUV_image[:, :, 0])
-            plt.subplot(223)
-            plt.imshow(IUV_image[:, :, 1])
-            plt.subplot(224)
-            plt.imshow(IUV_image[:, :, 2])
-            plt.show()
+            # plt.figure()
+            # plt.subplot(221)
+            # plt.imshow(overlay)
+            # plt.subplot(222)
+            # plt.imshow(IUV_image[:, :, 0])
+            # plt.subplot(223)
+            # plt.imshow(IUV_image[:, :, 1])
+            # plt.subplot(224)
+            # plt.imshow(IUV_image[:, :, 2])
+            # plt.show()
+            print(out_mask_path, out_vis_path)
+            # cv2.imwrite(out_vis_path, overlay)
+            # cv2.imwrite(out_mask_path, IUV_image)
         else:
             # Save visualisation and I image (i.e. segmentation mask)
             vis_I_image = apply_colormap(I_image, vmin=0, vmax=24)
