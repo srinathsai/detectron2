@@ -57,6 +57,7 @@ def visualise_denspose_results(dump_file, out_folder, save_uv=False, path_correc
         frame_fname = entry['file_name']
         if path_correction:
             frame_fname = frame_fname.replace('/scratch/', '/scratch2/')
+            frame_fname = frame_fname.replace('/cropped_frames/', '/eval/cropped_frames/')
         print(frame_fname)
         if out_folder == 'dataset' or out_folder == 'h36m':
             if save_uv:
