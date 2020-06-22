@@ -128,8 +128,8 @@ def visualise_denspose_results(dump_file, out_folder, save_uv=False, path_correc
                                       0.6,
                                       vis_U_image,
                                       0.4,
-                                      gamma=0)
-            print(overlay.max(), overlay.min())
+                                      gamma=0).astype(np.int16)
+            print(overlay.max(), overlay.min(), overlay.dtype)
             IUV_image = np.stack([I_image, U_image, V_image], axis=2)
             print(I_image.shape, V_image.shape, U_image.shape, vis_U_image.shape, IUV_image.shape, overlay.shape)
             plt.figure()
