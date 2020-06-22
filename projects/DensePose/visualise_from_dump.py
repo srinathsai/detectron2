@@ -121,7 +121,7 @@ def visualise_denspose_results(dump_file, out_folder, save_uv=False, path_correc
         print(I_image.max(), U_image.max(), V_image.max())
         if save_uv:
             # Save visualisation (U coordinates) and IUV image
-            vis_U_image = apply_colormap(U_image, vmin=0, vmax=1)
+            vis_U_image = apply_colormap(U_image, vmin=0, vmax=255)
             vis_U_image = vis_U_image[:, :, :3].astype(np.float32)
             vis_U_image[I_image == 0, :] = np.zeros(3, dtype=np.float32)
             overlay = cv2.addWeighted(frame,
