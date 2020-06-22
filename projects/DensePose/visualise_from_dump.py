@@ -48,13 +48,15 @@ def apply_colormap(image, vmin=None, vmax=None, cmap='viridis', cmap_seed=1):
     return vis
 
 
-def visualise_denspose_results(dump_file, out_folder, save_uv=False):
+def visualise_denspose_results(dump_file, out_folder, save_uv=False, path_correction=False):
     with open(dump_file, 'rb') as f_results:
         data = pickle.load(f_results)
 
     # Loop through frames
     for entry in data:
         frame_fname = entry['file_name']
+        if path_correction:
+            frame_fname = frame_fname.replace('/scratch/', '/scratch2/')
         print(frame_fname)
         if out_folder == 'dataset' or out_folder == 'h36m':
             if save_uv:
@@ -138,8 +140,8 @@ def visualise_denspose_results(dump_file, out_folder, save_uv=False):
                                       vis_I_image,
                                       0.4,
                                       gamma=0)
-            cv2.imwrite(out_vis_path, overlay)
-            cv2.imwrite(out_mask_path, I_image)
+            # cv2.imwrite(out_vis_path, overlay)
+            # cv2.imwrite(out_mask_path, I_image)
 
 
 if __name__ == '__main__':
@@ -147,7 +149,9 @@ if __name__ == '__main__':
     parser.add_argument('--dump_file', type=str)
     parser.add_argument('--out_folder', type=str)
     parser.add_argument('--save_uv', action='store_true')
+    parser.add_argument('--path_correct', action='store_true')
     args = parser.parse_args()
 
     visualise_denspose_results(args.dump_file, args.out_folder,
-                               save_uv=args.save_uv)
+                               save_uv=args.save_uv,
+                               path_correction=args.path_correct)
