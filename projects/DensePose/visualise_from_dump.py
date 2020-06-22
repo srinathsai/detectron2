@@ -126,7 +126,7 @@ def visualise_denspose_results(dump_file, out_folder, save_uv=False, path_correc
             # vis_U_image = vis_U_image[:, :, :3].astype(np.float32)
             # vis_U_image[I_image == 0, :] = np.zeros(3, dtype=np.float32)
             vis_U_image = np.stack([U_image]*3, axis=2)
-            print(vis_U_image.shape, frame.shape)
+            print(vis_U_image.dtype, frame.dtype)
             overlay = cv2.addWeighted(frame,
                                       0.6,
                                       vis_U_image,
