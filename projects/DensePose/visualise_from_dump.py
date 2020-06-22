@@ -140,6 +140,7 @@ def visualise_denspose_results(dump_file, out_folder, save_uv=False, path_correc
             # print(out_mask_path, out_vis_path)
             cv2.imwrite(out_vis_path, overlay)
             cv2.imwrite(out_mask_path, IUV_image)
+            print(IUV_image.shape)
         else:
             # Save visualisation and I image (i.e. segmentation mask)
             vis_I_image = apply_colormap(I_image, vmin=0, vmax=24)
