@@ -137,7 +137,7 @@ def visualise_denspose_results(dump_file, out_folder, save_uv=False, path_correc
             # plt.subplot(224)
             # plt.imshow(IUV_image[:, :, 2])
             # plt.show()
-            # print(out_mask_path, out_vis_path)
+            print(out_mask_path, out_vis_path)
             # cv2.imwrite(out_vis_path, overlay)
             # cv2.imwrite(out_mask_path, IUV_image)
         else:
@@ -150,8 +150,8 @@ def visualise_denspose_results(dump_file, out_folder, save_uv=False, path_correc
                                       vis_I_image,
                                       0.4,
                                       gamma=0)
-            # cv2.imwrite(out_vis_path, overlay)
-            # cv2.imwrite(out_mask_path, I_image)
+            cv2.imwrite(out_vis_path, overlay)
+            cv2.imwrite(out_mask_path, I_image)
 
 
 if __name__ == '__main__':
