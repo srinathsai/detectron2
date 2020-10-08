@@ -87,9 +87,9 @@ def predict_on_folder(in_folder, out_folder, config_file, save_kps_in_separate_f
             for j in range(keypoints.shape[0]):
                 cv2.circle(image, (keypoints[j, 0], keypoints[j, 1]), 5, (0, 255, 0), -1)
                 font = cv2.FONT_HERSHEY_SIMPLEX
-                fontScale = 0.6
+                fontScale = 0.4
                 fontColor = (0, 0, 255)
-                cv2.putText(image, str(j)+" {:.2f}".format(keypoints[j, 2]), (keypoints[j, 0], keypoints[j, 1]),
+                cv2.putText(image, str(j), (keypoints[j, 0], keypoints[j, 1]),
                             font, fontScale, fontColor, lineType=2)
                 cv2.putText(image, str(j) + " {:.2f}".format(keypoints[j, 2]), (10, 10*(j+1)),
                             font, fontScale, fontColor, lineType=2)
