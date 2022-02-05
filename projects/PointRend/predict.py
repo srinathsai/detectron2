@@ -92,7 +92,7 @@ def main(args):
     os.makedirs(output_masks_folder, exist_ok=True)
     os.makedirs(output_vis_folder, exist_ok=True)
 
-    image_fnames = [f for f in sorted(os.listdir(input_folder)) if f.endswith('.png')]
+    image_fnames = [f for f in sorted(os.listdir(input_folder)) if f.endswith('.png') or f.endswith('.jpg')]
     for fname in image_fnames:
         print(fname)
         input = cv2.imread(os.path.join(input_folder, fname))
