@@ -82,8 +82,12 @@ def main(args):
     pred = DefaultPredictor(cfg)
 
     input_folder = args.input_folder
-    output_masks_folder = input_folder.replace('cropped_frames', 'pointrend_R50FPN_masks')
-    output_vis_folder = input_folder.replace('cropped_frames', 'pointrend_R50FPN_vis')
+    if args.output_masks_folder is None:
+        output_masks_folder = input_folder.replace('cropped_frames', 'pointrend_R50FPN_masks')
+        output_vis_folder = input_folder.replace('cropped_frames', 'pointrend_R50FPN_vis')
+    else:
+        output_masks_folder = args.output_masks_folder
+        output_vis_folder = args.output_vis_folder
     print("Saving to:", output_masks_folder)
     os.makedirs(output_masks_folder, exist_ok=True)
     os.makedirs(output_vis_folder, exist_ok=True)
@@ -122,6 +126,8 @@ if __name__ == "__main__":
     # )
     parser = argparse.ArgumentParser()
     parser.add_argument('--input_folder', type=str)
+    parser.add_argument('--output_masks_folder')
+    parser.add_argument('--output_vis_folder')
     parser.add_argument("--config_file", default="", metavar="FILE", help="path to config file")
     parser.add_argument(
         "opts",
